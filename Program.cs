@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using KPI_Dashboard.Data;
 using KPI_Dashboard.Models;
+using KPI_Dashboard.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,7 @@ builder.Services.AddAuthentication()
         options.AccessDeniedPath = "/Home/AccessDenied";
         options.LoginPath = "/Identity/Account/Login";
     });
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 var app = builder.Build();
 
