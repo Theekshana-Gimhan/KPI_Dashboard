@@ -5,7 +5,7 @@ using KPI_Dashboard.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using KPI_Dashboard.Services; // For email service (added later)
+using KPI_Dashboard.Services;
 
 namespace KPI_Dashboard.Controllers
 {
@@ -60,8 +60,12 @@ namespace KPI_Dashboard.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddUser(AddUserViewModel model)
         {
+            var logger = HttpContext.RequestServices.GetRequiredService<ILogger<AdminController>>();
+            logger.LogInformation("Attempting to add user with email: {Email}", model.Email);
+
             if (!ModelState.IsValid)
             {
+                logger.LogWarning("ModelState is invalid. Errors: {Errors}", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 model.AvailableRoles = _roleManager.Roles.Select(r => r.Name).ToList();
                 return View(model);
             }
@@ -81,13 +85,12 @@ namespace KPI_Dashboard.Controllers
                     await _userManager.AddToRolesAsync(user, model.SelectedRoles);
                 }
 
-                // Send email notification
-                await _emailService.SendEmailAsync(model.Email, "Account Created", $"Your account has been created. Your password is: {model.Password}");
-
+                logger.LogInformation("User created successfully: {Email}", model.Email);
                 TempData["SuccessMessage"] = "User created successfully!";
                 return RedirectToAction("Index");
             }
 
+            logger.LogError("Failed to create user. Errors: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
@@ -249,8 +252,8 @@ namespace KPI_Dashboard.Controllers
             var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
             if (result.Succeeded)
             {
-                // Send email notification
-                await _emailService.SendEmailAsync(user.Email, "Password Changed", $"Your password has been changed to: {model.NewPassword}");
+                // Temporarily disable email sending
+                // await _emailService.SendEmailAsync(user.Email, "Password Changed", $"Your password has been changed to: {model.NewPassword}");
 
                 TempData["SuccessMessage"] = "Password changed successfully!";
                 return RedirectToAction("Index");
@@ -286,7 +289,7 @@ namespace KPI_Dashboard.Controllers
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
         public string Password { get; set; }
 
-        public List<string> AvailableRoles { get; set; }
+        public List<string> AvailableRoles { get; set; } = new List<string>(); // Initialize to empty list
         public List<string> SelectedRoles { get; set; }
     }
 
