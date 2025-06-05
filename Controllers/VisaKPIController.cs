@@ -21,9 +21,19 @@ namespace KPI_Dashboard.Controllers
         }
 
         // GET: Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new VisaKPI());
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var model = new VisaKPI
+            {
+                UserId = user.Id
+            };
+            return View(model);
         }
 
         // POST: Create (Initial Submission)
@@ -44,15 +54,12 @@ namespace KPI_Dashboard.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Confirm(VisaKPI model)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            if (!ModelState.IsValid)
             {
-                return Unauthorized();
+                return View(model);
             }
 
-            model.UserId = user.Id;
             model.EntryDate = DateTime.Now;
-
             _context.VisaKPIs.Add(model);
             await _context.SaveChangesAsync();
 

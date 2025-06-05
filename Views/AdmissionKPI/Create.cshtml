@@ -5,6 +5,7 @@
 
     <form asp-action="Create" method="post">
         <div asp-validation-summary="All" class="text-danger mb-3"></div>
+        <input type="hidden" asp-for="UserId" />
 
         <div class="form-group mb-3">
             <label asp-for="Applications" class="form-label"></label>

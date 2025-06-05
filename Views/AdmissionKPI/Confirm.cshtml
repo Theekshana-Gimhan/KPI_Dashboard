@@ -9,6 +9,7 @@
     </div>
 
     <form asp-action="Confirm" method="post">
+        <input type="hidden" asp-for="UserId" />
         <input type="hidden" asp-for="Applications" />
         <input type="hidden" asp-for="Consultations" />
 
