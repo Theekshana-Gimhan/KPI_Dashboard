@@ -7,7 +7,7 @@
         Are you sure you want to delete the user <strong>@Model.Name</strong> (@Model.Email)?
     </div>
 
-    <form asp-action="DeleteUserConfirmed" method="post">
+    <form asp-action="DeleteUser" method="post">
         <input type="hidden" asp-for="Id" />
 
         <div class="text-center">
