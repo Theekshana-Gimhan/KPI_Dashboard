@@ -1,0 +1,22 @@
+﻿@model KPI_Dashboard.Models.VisaKPI
+
+<div class="container mt-4">
+    <h2 class="text-center">Confirm Visa KPI</h2>
+
+    <div class="alert alert-info text-center">
+        <p>Inquiries: @Model.Inquiries</p>
+        <p>Consultations: @Model.Consultations</p>
+        <p>Conversions: @Model.Conversions</p>
+    </div>
+
+    <form asp-action="Confirm" method="post">
+        <input type="hidden" asp-for="Inquiries" />
+        <input type="hidden" asp-for="Consultations" />
+        <input type="hidden" asp-for="Conversions" />
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-success">Confirm</button>
+            <a asp-action="Create" class="btn btn-secondary">Change</a>
+        </div>
+    </form>
+</div>

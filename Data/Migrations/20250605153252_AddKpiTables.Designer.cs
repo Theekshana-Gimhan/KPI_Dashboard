@@ -4,6 +4,7 @@ using KPI_Dashboard.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KPI_Dashboard.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250605153252_AddKpiTables")]
+    partial class AddKpiTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,14 +33,14 @@ namespace KPI_Dashboard.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Applications")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Consultations")
+                    b.Property<int>("ApplicationsProcessed")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EntryDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<double>("SuccessRate")
+                        .HasColumnType("float");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -127,21 +130,18 @@ namespace KPI_Dashboard.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Consultations")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Conversions")
-                        .HasColumnType("int");
+                    b.Property<double>("ApprovalRate")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("EntryDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Inquiries")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("VisaApplicationsProcessed")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
