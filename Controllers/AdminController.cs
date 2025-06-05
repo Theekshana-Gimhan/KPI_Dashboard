@@ -100,6 +100,7 @@ namespace KPI_Dashboard.Controllers
         }
 
         // GET: Edit User
+
         [HttpGet]
         public async Task<IActionResult> EditUser(string id)
         {
@@ -127,8 +128,12 @@ namespace KPI_Dashboard.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditUser(EditUserViewModel model)
         {
+            var logger = HttpContext.RequestServices.GetRequiredService<ILogger<AdminController>>();
+            logger.LogInformation("Attempting to edit user with ID: {Id}, Email: {Email}", model.Id, model.Email);
+
             if (!ModelState.IsValid)
             {
+                logger.LogWarning("ModelState is invalid. Errors: {Errors}", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 model.AvailableRoles = _roleManager.Roles.Select(r => r.Name).ToList();
                 return View(model);
             }
@@ -136,6 +141,7 @@ namespace KPI_Dashboard.Controllers
             var user = await _userManager.FindByIdAsync(model.Id);
             if (user == null)
             {
+                logger.LogError("User not found with ID: {Id}", model.Id);
                 return NotFound();
             }
 
@@ -146,18 +152,29 @@ namespace KPI_Dashboard.Controllers
             var updateResult = await _userManager.UpdateAsync(user);
             if (updateResult.Succeeded)
             {
+                logger.LogInformation("User updated successfully: {Email}", model.Email);
+
                 // Update roles
                 var currentRoles = await _userManager.GetRolesAsync(user);
-                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                var result = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                if (!result.Succeeded)
+                {
+                    logger.LogWarning("Failed to remove existing roles: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
                 if (model.SelectedRoles != null)
                 {
-                    await _userManager.AddToRolesAsync(user, model.SelectedRoles);
+                    result = await _userManager.AddToRolesAsync(user, model.SelectedRoles);
+                    if (!result.Succeeded)
+                    {
+                        logger.LogWarning("Failed to add new roles: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
+                    }
                 }
 
                 TempData["SuccessMessage"] = "User updated successfully!";
                 return RedirectToAction("Index");
             }
 
+            logger.LogError("Failed to update user. Errors: {Errors}", string.Join(", ", updateResult.Errors.Select(e => e.Description)));
             foreach (var error in updateResult.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
@@ -305,7 +322,7 @@ namespace KPI_Dashboard.Controllers
         [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string Email { get; set; }
 
-        public List<string> AvailableRoles { get; set; }
+        public List<string> AvailableRoles { get; set; } = new List<string>(); // Initialize to avoid null
         public List<string> SelectedRoles { get; set; }
     }
 
