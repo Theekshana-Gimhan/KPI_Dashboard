@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
-  @inject UserManager<ApplicationUser> UserManager
-  @inject SignInManager<ApplicationUser> SignInManager
+    @inject UserManager<ApplicationUser> UserManager
+    @inject SignInManager<ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = "KPI Dashboard";
@@ -41,6 +41,9 @@
     </div>
     <div class="text-center mb-3">
         <button id="applyFilters" class="btn btn-primary">Apply Filters</button>
+        <div id="loading" class="spinner-border text-primary" role="status" style="display: none;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
 
     <!-- Visual Analytics -->
@@ -83,7 +86,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Initialize datepickers
+            // Initialize datepickers with default last 30 days
             $('.datepicker').datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
@@ -93,20 +96,41 @@
                   $('#applyFilters').trigger('click');
               });
 
-            // Initialize charts
+            // Initialize charts with enhanced options
             var lineChart = new Chart(document.getElementById('lineChart').getContext('2d'), {
                 type: 'line',
                 data: {
                     labels: [],
                     datasets: [
-                        { label: 'Applications (Admission)', data: [], borderColor: 'blue', fill: false },
-                        { label: 'Consultations (Admission)', data: [], borderColor: 'green', fill: false },
-                        { label: 'Consultations (Visa)', data: [], borderColor: 'purple', fill: false },
-                        { label: 'Inquiries (Visa)', data: [], borderColor: 'orange', fill: false },
-                        { label: 'Conversions (Visa)', data: [], borderColor: 'red', fill: false }
+                        { label: 'Applications (Admission)', data: [], borderColor: 'blue', fill: false, hidden: false },
+                        { label: 'Consultations (Admission)', data: [], borderColor: 'green', fill: false, hidden: false },
+                        { label: 'Consultations (Visa)', data: [], borderColor: 'purple', fill: false, hidden: false },
+                        { label: 'Inquiries (Visa)', data: [], borderColor: 'orange', fill: false, hidden: false },
+                        { label: 'Conversions (Visa)', data: [], borderColor: 'red', fill: false, hidden: false }
                     ]
                 },
-                options: { responsive: true, scales: { y: { beginAtZero: true } } }
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: {
+                        legend: {
+                            onClick: (e, legendItem, legend) => {
+                                const index = legendItem.datasetIndex;
+                                const ci = legend.chart;
+                                if (ci.isDatasetVisible(index)) {
+                                    ci.hide(index);
+                                } else {
+                                    ci.show(index);
+                                }
+                                ci.update();
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
             });
 
             var pieChart = new Chart(document.getElementById('pieChart').getContext('2d'), {
@@ -118,7 +142,17 @@
                         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
                     }]
                 },
-                options: { responsive: true }
+                options: {
+                    responsive: true,
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const user = pieChart.data.labels[index];
+                            $('#user').val(user === 'Unknown' ? 'All users' : user).trigger('change');
+                            $('#applyFilters').trigger('click');
+                        }
+                    }
+                }
             });
 
             var barChart = new Chart(document.getElementById('barChart').getContext('2d'), {
@@ -134,12 +168,13 @@
                 options: {
                     responsive: true,
                     scales: { y: { beginAtZero: true } },
-                    plugins: { legend: { display: true } }
+                    plugins: { legend: { display: true }, tooltip: { mode: 'index', intersect: false } }
                 }
             });
 
-            // Apply filters
+            // Apply filters with loading indicator
             $('#applyFilters').click(function () {
+                $('#loading').show();
                 var startDate = $('#dateRangeFrom').val() ? new Date($('#dateRangeFrom').val()) : null;
                 var endDate = $('#dateRangeTo').val() ? new Date($('#dateRangeTo').val()) : null;
                 var department = $('#department').val();
@@ -207,6 +242,10 @@
                             </div>
                         </div>
                     `);
+                    $('#loading').hide();
+                }).fail(function () {
+                    alert('Error fetching data');
+                    $('#loading').hide();
                 });
             });
 
@@ -219,4 +258,4 @@
             });
         });
     </script>
-  }
+    }
