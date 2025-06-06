@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using KPI_Dashboard.Data;
 using KPI_Dashboard.Models;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace KPI_Dashboard.Controllers
@@ -22,19 +23,27 @@ namespace KPI_Dashboard.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return Unauthorized();
-            }
+            var users = new List<string> { "All users" };
+            users.AddRange((await _userManager.GetUsersInRoleAsync("Admission"))
+                .Concat(await _userManager.GetUsersInRoleAsync("Visa"))
+                .Select(u => u.UserName));
+            ViewBag.Users = users;
+            return View();
+        }
 
-            var model = new DashboardViewModel
+        [HttpPost]
+        public JsonResult GetDashboardData(DateTime? startDate, DateTime? endDate, string department, string user)
+        {
+            // Placeholder: Will implement data aggregation in Step 2
+            var data = new
             {
-                AdmissionKPIs = _context.AdmissionKPIs.Where(k => k.UserId == user.Id).ToList(),
-                VisaKPIs = _context.VisaKPIs.Where(k => k.UserId == user.Id).ToList()
+                message = "Data will be populated in Step 2",
+                lineData = new { },
+                pieData = new { },
+                barData = new { },
+                metrics = new { }
             };
-
-            return View(model);
+            return Json(data);
         }
     }
 }
