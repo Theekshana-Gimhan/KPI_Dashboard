@@ -1,0 +1,75 @@
+﻿@model KPI_Dashboard.Models.DashboardViewModel
+
+<div class="container mt-4">
+    <h2 class="text-center">Dashboard</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success text-center" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <h3>Admission KPIs</h3>
+    @if (Model.AdmissionKPIs.Any())
+    {
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Applications</th>
+                    <th>Consultations</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var kpi in Model.AdmissionKPIs)
+                {
+                    <tr>
+                        <td>@kpi.EntryDate.ToString("yyyy-MM-dd")</td>
+                        <td>@kpi.Applications</td>
+                        <td>@kpi.Consultations</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No Admission KPIs recorded.</p>
+    }
+
+    <h3>Visa KPIs</h3>
+    @if (Model.VisaKPIs.Any())
+    {
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Inquiries</th>
+                    <th>Consultations</th>
+                    <th>Conversions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var kpi in Model.VisaKPIs)
+                {
+                    <tr>
+                        <td>@kpi.EntryDate.ToString("yyyy-MM-dd")</td>
+                        <td>@kpi.Inquiries</td>
+                        <td>@kpi.Consultations</td>
+                        <td>@kpi.Conversions</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No Visa KPIs recorded.</p>
+    }
+
+    <div class="text-center mt-4">
+        <a asp-controller="AdmissionKPI" asp-action="Create" class="btn btn-primary">Add Admission KPI</a>
+        <a asp-controller="VisaKPI" asp-action="Create" class="btn btn-secondary mx-2">Add Visa KPI</a>
+    </div>
+</div>
