@@ -43,23 +43,29 @@
         <button id="applyFilters" class="btn btn-primary">Apply Filters</button>
     </div>
 
-    <!-- Visual Analytics Placeholders -->
+    <!-- Visual Analytics -->
     <div class="row">
         <div class="col-md-12">
+            <h4 class="text-center">Time-Based Trends</h4>
             <canvas id="lineChart" style="max-height: 400px;"></canvas>
         </div>
     </div>
     <div class="row mt-4">
         <div class="col-md-6">
+            <h4 class="text-center">Consultations Distribution by User</h4>
             <canvas id="pieChart" style="max-height: 400px;"></canvas>
         </div>
         <div class="col-md-6">
+            <h4 class="text-center">Comparative Metrics</h4>
             <canvas id="barChart" style="max-height: 400px;"></canvas>
         </div>
     </div>
     <div class="row mt-4">
         <div class="col-md-12">
-            <div id="metricCards" class="row text-center"></div>
+            <h4 class="text-center">Summary Metrics</h4>
+            <div id="metricCards" class="row text-center">
+                <!-- Populated dynamically -->
+            </div>
         </div>
     </div>
 
@@ -87,6 +93,51 @@
                   $('#applyFilters').trigger('click');
               });
 
+            // Initialize charts
+            var lineChart = new Chart(document.getElementById('lineChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Applications (Admission)', data: [], borderColor: 'blue', fill: false },
+                        { label: 'Consultations (Admission)', data: [], borderColor: 'green', fill: false },
+                        { label: 'Consultations (Visa)', data: [], borderColor: 'purple', fill: false },
+                        { label: 'Inquiries (Visa)', data: [], borderColor: 'orange', fill: false },
+                        { label: 'Conversions (Visa)', data: [], borderColor: 'red', fill: false }
+                    ]
+                },
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+
+            var pieChart = new Chart(document.getElementById('pieChart').getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                    }]
+                },
+                options: { responsive: true }
+            });
+
+            var barChart = new Chart(document.getElementById('barChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Applications', data: [], backgroundColor: 'blue' },
+                        { label: 'Consultations', data: [], backgroundColor: 'green' },
+                        { label: 'Conversions', data: [], backgroundColor: 'red' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { legend: { display: true } }
+                }
+            });
+
             // Apply filters
             $('#applyFilters').click(function () {
                 var startDate = $('#dateRangeFrom').val() ? new Date($('#dateRangeFrom').val()) : null;
@@ -100,9 +151,67 @@
                     department: department,
                     user: user
                 }, function (data) {
-                    alert(data.message); // Placeholder for now
+                    // Update Line Chart
+                    lineChart.data.labels = data.lineData.dates;
+                    lineChart.data.datasets[0].data = data.lineData.applications;
+                    lineChart.data.datasets[1].data = data.lineData.admissionConsultations;
+                    lineChart.data.datasets[2].data = data.lineData.visaConsultations;
+                    lineChart.data.datasets[3].data = data.lineData.inquiries;
+                    lineChart.data.datasets[4].data = data.lineData.conversions;
+                    lineChart.update();
+
+                    // Update Pie Chart
+                    pieChart.data.labels = data.pieData.labels;
+                    pieChart.data.datasets[0].data = data.pieData.values;
+                    pieChart.update();
+
+                    // Update Bar Chart
+                    barChart.data.labels = data.barData.labels;
+                    barChart.data.datasets[0].data = data.barData.applications;
+                    barChart.data.datasets[1].data = data.barData.consultations;
+                    barChart.data.datasets[2].data = data.barData.conversions;
+                    barChart.update();
+
+                    // Update Metric Cards
+                    $('#metricCards').html(`
+                        <div class="col-md-3">
+                            <div class="card text-white bg-primary mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total Applications</h5>
+                                    <p class="card-text">${data.metrics.totalApplications}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-white bg-success mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total Consultations</h5>
+                                    <p class="card-text">${data.metrics.totalConsultations}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-white bg-info mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Visa Conversion Rate</h5>
+                                    <p class="card-text">${data.metrics.visaConversionRate.toFixed(2)}%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-white bg-warning mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Top Performing User</h5>
+                                    <p class="card-text">${data.metrics.topPerformingUser}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `);
                 });
             });
+
+            // Trigger initial filter apply
+            $('#applyFilters').trigger('click');
 
             // Download report (placeholder)
             $('#downloadReport').click(function () {
