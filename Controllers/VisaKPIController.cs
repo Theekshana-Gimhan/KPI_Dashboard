@@ -59,11 +59,32 @@ namespace KPI_Dashboard.Controllers
                 return View(model);
             }
 
-            model.EntryDate = DateTime.Now;
-            _context.VisaKPIs.Add(model);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            model.EntryDate = DateTime.Today; // Set to start of the day
+            var existingKpi = _context.VisaKPIs
+                .FirstOrDefault(k => k.UserId == user.Id && k.EntryDate.Date == model.EntryDate.Date);
+
+            if (existingKpi != null)
+            {
+                existingKpi.Inquiries = model.Inquiries;
+                existingKpi.Consultations = model.Consultations;
+                existingKpi.Conversions = model.Conversions;
+                _context.VisaKPIs.Update(existingKpi);
+            }
+            else
+            {
+                model.UserId = user.Id;
+                _context.VisaKPIs.Add(model);
+            }
+
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Visa KPI added successfully!";
+            TempData["SuccessMessage"] = "Visa KPI updated successfully!";
             return RedirectToAction("Index");
         }
 

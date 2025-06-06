@@ -59,11 +59,31 @@ namespace KPI_Dashboard.Controllers
                 return View(model);
             }
 
-            model.EntryDate = DateTime.Now;
-            _context.AdmissionKPIs.Add(model);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            model.EntryDate = DateTime.Today; // Set to start of the day
+            var existingKpi = _context.AdmissionKPIs
+                .FirstOrDefault(k => k.UserId == user.Id && k.EntryDate.Date == model.EntryDate.Date);
+
+            if (existingKpi != null)
+            {
+                existingKpi.Applications = model.Applications;
+                existingKpi.Consultations = model.Consultations;
+                _context.AdmissionKPIs.Update(existingKpi);
+            }
+            else
+            {
+                model.UserId = user.Id;
+                _context.AdmissionKPIs.Add(model);
+            }
+
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Admission KPI added successfully!";
+            TempData["SuccessMessage"] = "Admission KPI updated successfully!";
             return RedirectToAction("Index");
         }
 
