@@ -8,7 +8,13 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.EntityFrameworkCore;
+using ClosedXML.Excel;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
+using iText.Kernel.Font; // For PdfFontFactory
+using Microsoft.EntityFrameworkCore; // For AsNoTracking
 
 namespace KPI_Dashboard.Controllers
 {
@@ -158,6 +164,168 @@ namespace KPI_Dashboard.Controllers
             }
 
             return Json(dashboardData);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadExcel(DateTime? startDate, DateTime? endDate, string department, string user)
+        {
+            startDate = startDate ?? DateTime.Today.AddDays(-30);
+            endDate = endDate ?? DateTime.Today;
+            endDate = endDate.Value.Date.AddDays(1).AddTicks(-1);
+
+            var admissionQuery = _context.AdmissionKPIs.AsNoTracking();
+            var visaQuery = _context.VisaKPIs.AsNoTracking();
+
+            admissionQuery = admissionQuery.Where(k => k.EntryDate >= startDate && k.EntryDate <= endDate);
+            visaQuery = visaQuery.Where(k => k.EntryDate >= startDate && k.EntryDate <= endDate);
+
+            if (user != "All users")
+            {
+                var selectedUser = await _userManager.FindByNameAsync(user);
+                if (selectedUser != null)
+                {
+                    admissionQuery = admissionQuery.Where(k => k.UserId == selectedUser.Id);
+                    visaQuery = visaQuery.Where(k => k.UserId == selectedUser.Id);
+                }
+            }
+
+            if (department == "Admission")
+            {
+                visaQuery = visaQuery.Where(k => false);
+            }
+            else if (department == "Visa")
+            {
+                admissionQuery = admissionQuery.Where(k => false);
+            }
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("KPI Data");
+                worksheet.Cell("A1").Value = "Date";
+                worksheet.Cell("B1").Value = "Applications";
+                worksheet.Cell("C1").Value = "Admission Consultations";
+                worksheet.Cell("D1").Value = "Inquiries";
+                worksheet.Cell("E1").Value = "Visa Consultations";
+                worksheet.Cell("F1").Value = "Conversions";
+
+                var row = 2;
+                foreach (var date in admissionQuery.Select(k => k.EntryDate.Date).Distinct()
+                    .Concat(visaQuery.Select(k => k.EntryDate.Date).Distinct())
+                    .OrderBy(d => d))
+                {
+                    var admissionData = admissionQuery.FirstOrDefault(k => k.EntryDate.Date == date);
+                    var visaData = visaQuery.FirstOrDefault(k => k.EntryDate.Date == date);
+
+                    worksheet.Cell(row, 1).Value = date.ToString("yyyy-MM-dd");
+                    worksheet.Cell(row, 2).Value = admissionData?.Applications ?? 0;
+                    worksheet.Cell(row, 3).Value = admissionData?.Consultations ?? 0;
+                    worksheet.Cell(row, 4).Value = visaData?.Inquiries ?? 0;
+                    worksheet.Cell(row, 5).Value = visaData?.Consultations ?? 0;
+                    worksheet.Cell(row, 6).Value = visaData?.Conversions ?? 0;
+                    row++;
+                }
+
+                worksheet.Cell($"A{row + 2}").Value = "Summary Metrics";
+                worksheet.Cell($"A{row + 3}").Value = "Total Applications";
+                worksheet.Cell($"B{row + 3}").Value = admissionQuery.Sum(k => k.Applications);
+                worksheet.Cell($"A{row + 4}").Value = "Total Consultations";
+                worksheet.Cell($"B{row + 4}").Value = admissionQuery.Sum(k => k.Consultations) + visaQuery.Sum(k => k.Consultations);
+                worksheet.Cell($"A{row + 5}").Value = "Visa Conversion Rate";
+                worksheet.Cell($"B{row + 5}").Value = $"{(visaQuery.Sum(k => k.Inquiries) > 0 ? (double)visaQuery.Sum(k => k.Conversions) / visaQuery.Sum(k => k.Inquiries) * 100 : 0):F2}%";
+                worksheet.Cell($"A{row + 6}").Value = "Top Performing User";
+                worksheet.Cell($"B{row + 6}").Value = "N/A"; // Placeholder, will update with real data in future
+
+                using (var stream = new System.IO.MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    var content = stream.ToArray();
+                    return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"KPI_Report_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
+                }
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadPdf(DateTime? startDate, DateTime? endDate, string department, string user)
+        {
+            startDate = startDate ?? DateTime.Today.AddDays(-30);
+            endDate = endDate ?? DateTime.Today;
+            endDate = endDate.Value.Date.AddDays(1).AddTicks(-1);
+
+            var admissionQuery = _context.AdmissionKPIs.AsNoTracking();
+            var visaQuery = _context.VisaKPIs.AsNoTracking();
+
+            admissionQuery = admissionQuery.Where(k => k.EntryDate >= startDate && k.EntryDate <= endDate);
+            visaQuery = visaQuery.Where(k => k.EntryDate >= startDate && k.EntryDate <= endDate);
+
+            if (user != "All users")
+            {
+                var selectedUser = await _userManager.FindByNameAsync(user);
+                if (selectedUser != null)
+                {
+                    admissionQuery = admissionQuery.Where(k => k.UserId == selectedUser.Id);
+                    visaQuery = visaQuery.Where(k => k.UserId == selectedUser.Id);
+                }
+            }
+
+            if (department == "Admission")
+            {
+                visaQuery = visaQuery.Where(k => false);
+            }
+            else if (department == "Visa")
+            {
+                admissionQuery = admissionQuery.Where(k => false);
+            }
+
+            using (var stream = new System.IO.MemoryStream())
+            {
+                var writer = new PdfWriter(stream);
+                var pdf = new PdfDocument(writer);
+                var document = new Document(pdf);
+
+                // Create a bold font
+                var boldFont = PdfFontFactory.CreateFont(iText.IO.Font.Constants.StandardFonts.HELVETICA_BOLD);
+
+                // Add title with bold font
+                document.Add(new Paragraph($"KPI Report - {DateTime.Now:yyyy-MM-dd HH:mm:ss}")
+                    .SetFont(boldFont)
+                    .SetTextAlignment(TextAlignment.CENTER));
+
+                var table = new Table(6, false);
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Date")));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Applications")));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Admission Consultations")));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Inquiries")));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Visa Consultations")));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Conversions")));
+
+                foreach (var date in admissionQuery.Select(k => k.EntryDate.Date).Distinct()
+                    .Concat(visaQuery.Select(k => k.EntryDate.Date).Distinct())
+                    .OrderBy(d => d))
+                {
+                    var admissionData = admissionQuery.FirstOrDefault(k => k.EntryDate.Date == date);
+                    var visaData = visaQuery.FirstOrDefault(k => k.EntryDate.Date == date);
+
+                    table.AddCell(new Cell().Add(new Paragraph(date.ToString("yyyy-MM-dd"))));
+                    table.AddCell(new Cell().Add(new Paragraph((admissionData?.Applications ?? 0).ToString())));
+                    table.AddCell(new Cell().Add(new Paragraph((admissionData?.Consultations ?? 0).ToString())));
+                    table.AddCell(new Cell().Add(new Paragraph((visaData?.Inquiries ?? 0).ToString())));
+                    table.AddCell(new Cell().Add(new Paragraph((visaData?.Consultations ?? 0).ToString())));
+                    table.AddCell(new Cell().Add(new Paragraph((visaData?.Conversions ?? 0).ToString())));
+                }
+
+                document.Add(table);
+
+                // Add summary metrics with bold heading
+                document.Add(new Paragraph("\nSummary Metrics")
+                    .SetFont(boldFont));
+                document.Add(new Paragraph($"Total Applications: {admissionQuery.Sum(k => k.Applications)}"));
+                document.Add(new Paragraph($"Total Consultations: {admissionQuery.Sum(k => k.Consultations) + visaQuery.Sum(k => k.Consultations)}"));
+                document.Add(new Paragraph($"Visa Conversion Rate: {(visaQuery.Sum(k => k.Inquiries) > 0 ? (double)visaQuery.Sum(k => k.Conversions) / visaQuery.Sum(k => k.Inquiries) * 100 : 0):F2}%"));
+                document.Add(new Paragraph($"Top Performing User: N/A")); // Placeholder
+
+                document.Close();
+                return File(stream.ToArray(), "application/pdf", $"KPI_Report_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
+            }
         }
     }
 }

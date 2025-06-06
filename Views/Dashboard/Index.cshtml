@@ -7,7 +7,13 @@
 }
 
 <div class="container mt-4">
-    <h2 class="text-center">KPI Dashboard</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-center flex-grow-1">KPI Dashboard</h2>
+        <div class="btn-group" role="group">
+            <button id="downloadExcel" class="btn btn-success">Download Excel</button>
+            <button id="downloadPdf" class="btn btn-danger">Download PDF</button>
+        </div>
+    </div>
 
     <!-- Filter Controls -->
     <div class="row mb-3">
@@ -70,11 +76,6 @@
                 <!-- Populated dynamically -->
             </div>
         </div>
-    </div>
-
-    <!-- Download Report -->
-    <div class="text-center mt-4">
-        <button id="downloadReport" class="btn btn-secondary">Download Report</button>
     </div>
 </div>
 
@@ -252,9 +253,28 @@
             // Trigger initial filter apply
             $('#applyFilters').trigger('click');
 
-            // Download report (placeholder)
-            $('#downloadReport').click(function () {
-                alert('Download functionality will be implemented in Step 4');
+            // Download handlers with debug log
+            $('#downloadExcel').click(function () {
+                console.log('Download Excel clicked');
+                var startDate = $('#dateRangeFrom').val() ? new Date($('#dateRangeFrom').val()) : null;
+                var endDate = $('#dateRangeTo').val() ? new Date($('#dateRangeTo').val()) : null;
+                var department = $('#department').val();
+                var user = $('#user').val();
+                window.location.href = '@Url.Action("DownloadExcel", "Dashboard")?startDate=' + (startDate ? startDate.toISOString() : '') + '&endDate=' + (endDate ? endDate.toISOString() : '') + '&department=' + department + '&user=' + encodeURIComponent(user);
+            });
+
+            $('#downloadPdf').click(function () {
+                console.log('Download PDF clicked');
+                var startDate = $('#dateRangeFrom').val() ? new Date($('#dateRangeFrom').val()) : null;
+                var endDate = $('#dateRangeTo').val() ? new Date($('#dateRangeTo').val()) : null;
+                var department = $('#department').val();
+                var user = $('#user').val();
+                window.location.href = '@Url.Action("DownloadPdf", "Dashboard")?startDate=' + (startDate ? startDate.toISOString() : '') + '&endDate=' + (endDate ? endDate.toISOString() : '') + '&department=' + department + '&user=' + encodeURIComponent(user);
+            });
+
+            // Debug: Check if buttons are interactive
+            $('#downloadExcel, #downloadPdf').on('mouseover', function () {
+                console.log('Mouse over button:', $(this).attr('id'));
             });
         });
     </script>
