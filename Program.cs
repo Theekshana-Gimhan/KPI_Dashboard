@@ -31,7 +31,8 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 builder.Services.AddLogging(logging =>
 {
     logging.AddConsole();
-    logging.AddDebug();
+    logging.SetMinimumLevel(LogLevel.Information);
+    logging.AddFilter("Microsoft", LogLevel.Warning);
 });
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {

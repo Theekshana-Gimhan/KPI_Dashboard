@@ -66,21 +66,17 @@ namespace KPI_Dashboard.Controllers
             }
 
             model.EntryDate = DateTime.Today; // Set to start of the day
-            var existingKpi = _context.VisaKPIs
-                .FirstOrDefault(k => k.UserId == user.Id && k.EntryDate.Date == model.EntryDate.Date);
+            var existingKpis = _context.VisaKPIs
+                .Where(k => k.UserId == user.Id && k.EntryDate.Date == model.EntryDate.Date)
+                .ToList();
 
-            if (existingKpi != null)
+            if (existingKpis.Any())
             {
-                existingKpi.Inquiries = model.Inquiries;
-                existingKpi.Consultations = model.Consultations;
-                existingKpi.Conversions = model.Conversions;
-                _context.VisaKPIs.Update(existingKpi);
+                _context.VisaKPIs.RemoveRange(existingKpis);
             }
-            else
-            {
-                model.UserId = user.Id;
-                _context.VisaKPIs.Add(model);
-            }
+
+            model.UserId = user.Id;
+            _context.VisaKPIs.Add(model);
 
             await _context.SaveChangesAsync();
 
