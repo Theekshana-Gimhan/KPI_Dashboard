@@ -28,52 +28,33 @@
             </div>
         }
 
-        <div class="row justify-content-center">
-            @{
-                // Get the current user and check their roles
-                var user = await UserManager.GetUserAsync(User);
-                var isAdmission = user != null && await UserManager.IsInRoleAsync(user, "Admission");
-                var isVisa = user != null && await UserManager.IsInRoleAsync(user, "Visa");
-                var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
+        @{
+            // Get the current user and check their roles
+            var user = await UserManager.GetUserAsync(User);
+            var isAdmission = user != null && await UserManager.IsInRoleAsync(user, "Admission");
+            var isVisa = user != null && await UserManager.IsInRoleAsync(user, "Visa");
+            var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
+        }
+
+        <!-- Flexbox container for buttons -->
+        <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+            @if (isAdmission)
+            {
+                <a asp-controller="AdmissionKPI" asp-action="Create" class="btn btn-primary p-3 flex-fill text-center" style="min-width:220px;max-width:300px;">Enter Admission KPI</a>
             }
-            <div class="col-12 col-md-6 col-lg-3 mb-3">
-                <!-- Show 'Enter Admission KPI' button only for users in the Admission role -->
-                @if (isAdmission)
-                {
-                    <a asp-controller="AdmissionKPI" asp-action="Create" class="btn btn-primary w-100 p-3">Enter Admission KPI</a>
-                }
-            </div>
-            <div class="col-12 col-md-6 col-lg-3 mb-3">
-                <!-- Show 'Enter Visa KPI' button only for users in the Visa role -->
-                @if (isVisa)
-                {
-                    <a asp-controller="VisaKPI" asp-action="Create" class="btn btn-primary w-100 p-3">Enter Visa KPI</a>
-                }
-            </div>
-            <div class="col-12 col-md-6 col-lg-3 mb-3">
-                <!-- Show 'View Dashboard' button for any user in Admin, Admission, or Visa roles -->
-                @if (isAdmin || isAdmission || isVisa)
-                {
-                    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-success w-100 p-3">View Dashboard</a>
-                }
-            </div>
-            <div class="col-12 col-md-6 col-lg-3 mb-3">
-                <!-- Show 'User Management' button only for admin users -->
-                @if (isAdmin)
-                {
-                    <a asp-controller="Admin" asp-action="Index" class="btn btn-info w-100 p-3">User Management</a>
-                }
-            </div>
-            <div class="col-12 col-md-6 col-lg-3 mb-3">
-                <!-- Show 'Edit KPI' button only for admin users, with a distinct color -->
-                @if (isAdmin)
-                {
-                    <a asp-controller="KPI" asp-action="EditList" class="btn btn-warning w-100 p-3">Edit KPI</a>
-
-                }
-
-            </div>
-
+            @if (isVisa)
+            {
+                <a asp-controller="VisaKPI" asp-action="Create" class="btn btn-primary p-3 flex-fill text-center" style="min-width:220px;max-width:300px;">Enter Visa KPI</a>
+            }
+            @if (isAdmin || isAdmission || isVisa)
+            {
+                <a asp-controller="Dashboard" asp-action="Index" class="btn btn-success p-3 flex-fill text-center" style="min-width:220px;max-width:300px;">View Dashboard</a>
+            }
+            @if (isAdmin)
+            {
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-info p-3 flex-fill text-center" style="min-width:220px;max-width:300px;">User Management</a>
+                <a asp-controller="KPI" asp-action="EditList" class="btn btn-warning p-3 flex-fill text-center" style="min-width:220px;max-width:300px;">Edit KPI</a>
+            }
         </div>
     </div>
     <!-- Bootstrap JS for interactive components -->
