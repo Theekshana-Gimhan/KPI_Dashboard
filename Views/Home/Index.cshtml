@@ -7,48 +7,58 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KPI Dashboard</title>
+    <!-- Bootstrap CSS for styling -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container mt-4">
-        <h1 class="text-center">Welcome, @(User.Identity?.IsAuthenticated == true ? (await UserManager.GetUserAsync(User))?.Name ?? "Guest" : "Guest")!</h1>
+        <!-- Display a welcome message with the user's name if authenticated, otherwise show 'Guest' -->
+        <h1 class="text-center">
+            Welcome, @(User.Identity?.IsAuthenticated == true ? (await UserManager.GetUserAsync(User))?.Name ?? "Guest" : "Guest")!
+        </h1>
 
+        <!-- Show a success message if one exists in TempData, then clear it -->
         @if (TempData["SuccessMessage"] != null)
         {
             <div class="alert alert-success text-center" role="alert">
                 @TempData["SuccessMessage"]
                 @{
-                    TempData["SuccessMessage"] = null;
+                    TempData["SuccessMessage"] = null; // Clear the message after displaying
                 }
             </div>
         }
 
         <div class="row justify-content-center">
             @{
+                // Get the current user and check their roles
                 var user = await UserManager.GetUserAsync(User);
                 var isAdmission = user != null && await UserManager.IsInRoleAsync(user, "Admission");
                 var isVisa = user != null && await UserManager.IsInRoleAsync(user, "Visa");
                 var isAdmin = user != null && await UserManager.IsInRoleAsync(user, "Admin");
             }
             <div class="col-12 col-md-6 col-lg-3 mb-3">
+                <!-- Show 'Enter Admission KPI' button only for users in the Admission role -->
                 @if (isAdmission)
                 {
                     <a asp-controller="AdmissionKPI" asp-action="Create" class="btn btn-primary w-100 p-3">Enter Admission KPI</a>
                 }
             </div>
             <div class="col-12 col-md-6 col-lg-3 mb-3">
+                <!-- Show 'Enter Visa KPI' button only for users in the Visa role -->
                 @if (isVisa)
                 {
                     <a asp-controller="VisaKPI" asp-action="Create" class="btn btn-primary w-100 p-3">Enter Visa KPI</a>
                 }
             </div>
             <div class="col-12 col-md-6 col-lg-3 mb-3">
+                <!-- Show 'View Dashboard' button for any user in Admin, Admission, or Visa roles -->
                 @if (isAdmin || isAdmission || isVisa)
                 {
                     <a asp-controller="Dashboard" asp-action="Index" class="btn btn-success w-100 p-3">View Dashboard</a>
                 }
             </div>
             <div class="col-12 col-md-6 col-lg-3 mb-3">
+                <!-- Show 'User Management' button only for admin users -->
                 @if (isAdmin)
                 {
                     <a asp-controller="Admin" asp-action="Index" class="btn btn-info w-100 p-3">User Management</a>
@@ -56,6 +66,7 @@
             </div>
         </div>
     </div>
+    <!-- Bootstrap JS for interactive components -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
