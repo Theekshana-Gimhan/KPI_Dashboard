@@ -1,0 +1,65 @@
+﻿@page
+@{
+    ViewData["Title"] = "Bootstrap Collapse Test";
+}
+
+<div class="container mt-5">
+    <h2>Bootstrap Collapse Minimal Test</h2>
+    <div id="collapseStatus" class="alert alert-danger d-none" role="alert"></div>
+    <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#testCollapse" aria-expanded="true" aria-controls="testCollapse">
+        Toggle Collapse
+    </button>
+    <div class="collapse show" id="testCollapse">
+        <div class="card card-body">
+            If you can see this text, collapse is working!
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var statusDiv = document.getElementById('collapseStatus');
+            try {
+                // Check if Bootstrap JS is loaded
+                if (typeof bootstrap === 'undefined') {
+                    statusDiv.textContent = 'Bootstrap JS is not loaded! Collapse will not work.';
+                    statusDiv.classList.remove('d-none');
+                } else {
+                    statusDiv.classList.add('d-none');
+                }
+
+                // Listen for collapse events
+                var collapseEl = document.getElementById('testCollapse');
+                if (collapseEl) {
+                    collapseEl.addEventListener('show.bs.collapse', function () {
+                        statusDiv.textContent = 'Collapsing open...';
+                        statusDiv.classList.remove('d-none', 'alert-danger');
+                        statusDiv.classList.add('alert-info');
+                    });
+                    collapseEl.addEventListener('shown.bs.collapse', function () {
+                        statusDiv.textContent = 'Collapse is open.';
+                        statusDiv.classList.remove('d-none', 'alert-danger');
+                        statusDiv.classList.add('alert-success');
+                    });
+                    collapseEl.addEventListener('hide.bs.collapse', function () {
+                        statusDiv.textContent = 'Collapsing closed...';
+                        statusDiv.classList.remove('d-none', 'alert-danger');
+                        statusDiv.classList.add('alert-info');
+                    });
+                    collapseEl.addEventListener('hidden.bs.collapse', function () {
+                        statusDiv.textContent = 'Collapse is closed.';
+                        statusDiv.classList.remove('d-none', 'alert-danger');
+                        statusDiv.classList.add('alert-secondary');
+                    });
+                } else {
+                    statusDiv.textContent = 'Collapse element not found in DOM!';
+                    statusDiv.classList.remove('d-none');
+                }
+            } catch (err) {
+                statusDiv.textContent = 'Error: ' + err.message;
+                statusDiv.classList.remove('d-none');
+            }
+        });
+    </script>
+}

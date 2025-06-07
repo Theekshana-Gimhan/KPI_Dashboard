@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
-    @inject UserManager<ApplicationUser> UserManager
-    @inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = "KPI Dashboard";
@@ -15,40 +15,67 @@
         </div>
     </div>
 
-    <!-- Filter Controls -->
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <label for="dateRangeFrom" class="form-label">From:</label>
-            <input type="text" id="dateRangeFrom" class="form-control datepicker" />
-        </div>
-        <div class="col-md-4">
-            <label for="dateRangeTo" class="form-label">To:</label>
-            <input type="text" id="dateRangeTo" class="form-control datepicker" />
-        </div>
-        <div class="col-md-4">
-            <label for="department" class="form-label">Department:</label>
-            <select id="department" class="form-select">
-                <option value="All">All</option>
-                <option value="Admission">Admission</option>
-                <option value="Visa">Visa</option>
-            </select>
-        </div>
-    </div>
-    <div class="row mb-3">
+    <!-- Metric Cards at the top -->
+    <div class="row mb-4">
         <div class="col-md-12">
-            <label for="user" class="form-label">User:</label>
-            <select id="user" class="form-select">
-                @foreach (var u in ViewBag.Users)
-                {
-                    <option value="@u">@u</option>
-                }
-            </select>
+            <div id="metricCards" class="row text-center">
+                <!-- Populated dynamically -->
+            </div>
         </div>
     </div>
-    <div class="text-center mb-3">
-        <button id="applyFilters" class="btn btn-primary">Apply Filters</button>
-        <div id="loading" class="spinner-border text-primary" role="status" style="display: none;">
-            <span class="visually-hidden">Loading...</span>
+
+    <!-- Filter Toggle Button -->
+    <div class="text-end mb-2">
+        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#myCollapse" aria-expanded="false" aria-controls="myCollapse">
+            Filter Options
+        </button>
+        
+        <!--<button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+            Filter Options
+        </button>-->
+    </div>
+
+    <!-- Collapsible Filter Controls -->
+    <div class="collapse" id="myCollapse">
+        <div class="card card-body">
+    
+    <!--<div class="collapse show" id="filterCollapse">
+        <div class="card card-body">-->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="dateRangeFrom" class="form-label">From:</label>
+                    <input type="text" id="dateRangeFrom" class="form-control datepicker" />
+                </div>
+                <div class="col-md-4">
+                    <label for="dateRangeTo" class="form-label">To:</label>
+                    <input type="text" id="dateRangeTo" class="form-control datepicker" />
+                </div>
+                <div class="col-md-4">
+                    <label for="department" class="form-label">Department:</label>
+                    <select id="department" class="form-select">
+                        <option value="All">All</option>
+                        <option value="Admission">Admission</option>
+                        <option value="Visa">Visa</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="user" class="form-label">User:</label>
+                    <select id="user" class="form-select">
+                        @foreach (var u in ViewBag.Users)
+                        {
+                            <option value="@u">@u</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="text-center mb-3">
+                <button id="applyFilters" class="btn btn-primary">Apply Filters</button>
+                <div id="loading" class="spinner-border text-primary" role="status" style="display: none;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -67,14 +94,6 @@
         <div class="col-md-6">
             <h4 class="text-center">Comparative Metrics</h4>
             <canvas id="barChart" style="max-height: 400px;"></canvas>
-        </div>
-    </div>
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h4 class="text-center">Summary Metrics</h4>
-            <div id="metricCards" class="row text-center">
-                <!-- Populated dynamically -->
-            </div>
         </div>
     </div>
 </div>
@@ -278,4 +297,4 @@
             });
         });
     </script>
-    }
+}
