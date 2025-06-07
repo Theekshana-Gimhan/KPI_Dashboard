@@ -1,0 +1,41 @@
+﻿@model KPI_Dashboard.Models.KPIEditViewModel
+
+<h2>Edit KPI Entry</h2>
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Type" />
+    <div class="mb-3">
+        <label asp-for="EntryDate"></label>
+        <input asp-for="EntryDate" class="form-control" />
+    </div>
+    @if (Model.Type == "Admission")
+    {
+        <div class="mb-3">
+            <label asp-for="Applications"></label>
+            <input asp-for="Applications" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Consultations"></label>
+            <input asp-for="Consultations" class="form-control" />
+        </div>
+    }
+    else if (Model.Type == "Visa")
+    {
+        <div class="mb-3">
+            <label asp-for="Inquiries"></label>
+            <input asp-for="Inquiries" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Consultations"></label>
+            <input asp-for="Consultations" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Conversions"></label>
+            <input asp-for="Conversions" class="form-control" />
+        </div>
+    }
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="EditList" class="btn btn-secondary ms-2">Cancel</a>
+
+</form>

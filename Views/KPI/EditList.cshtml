@@ -1,0 +1,58 @@
+﻿@model IEnumerable<KPI_Dashboard.Models.KPIEditViewModel>
+
+<h2>Edit KPI Entries</h2>
+
+<!-- Filter Form -->
+<form method="get" asp-action="EditList">
+    <div class="row mb-3">
+        <div class="col">
+            <select name="department" class="form-select">
+                <option value="">All Departments</option>
+                <option value="Admission">Admission</option>
+                <option value="Visa">Visa</option>
+            </select>
+        </div>
+        <div class="col">
+            <input name="userName" class="form-control" placeholder="User Name" />
+        </div>
+        <div class="col">
+            <input name="date" type="date" class="form-control" />
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </div>
+</form>
+
+<!-- KPI Table -->
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>User</th>
+            <th>Department</th>
+            <th>Applications</th>
+            <th>Consultations</th>
+            <th>Inquiries</th>
+            <th>Conversions</th>
+            <th>Edit</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kpi in Model)
+        {
+            <tr>
+                <td>@kpi.EntryDate.ToShortDateString()</td>
+                <td>@kpi.UserId</td>
+                <td>@kpi.Type</td>
+                <td>@kpi.Applications</td>
+                <td>@kpi.Consultations</td>
+                <td>@kpi.Inquiries</td>
+                <td>@kpi.Conversions</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@kpi.Id" asp-route-type="@kpi.Type" class="btn btn-warning btn-sm">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
