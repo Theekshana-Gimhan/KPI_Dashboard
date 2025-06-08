@@ -1,20 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using KPI_Dashboard.Data;
-using KPI_Dashboard.Models;
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Caching.Memory;
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
+using iText.Kernel.Font; // For PdfFontFactory
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
-using iText.Kernel.Font; // For PdfFontFactory
+using KPI_Dashboard.Data;
+using KPI_Dashboard.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore; // For AsNoTracking
+using Microsoft.Extensions.Caching.Memory;
 
 namespace KPI_Dashboard.Controllers
 {

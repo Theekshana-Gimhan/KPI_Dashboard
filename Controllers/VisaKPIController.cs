@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using KPI_Dashboard.Data;
+using KPI_Dashboard.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using KPI_Dashboard.Data;
-using KPI_Dashboard.Models;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace KPI_Dashboard.Controllers
 {
