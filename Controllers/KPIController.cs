@@ -21,7 +21,8 @@ public class KPIController : Controller
         var kpis = new List<KPIEditViewModel>();
 
         // Find userId by userName if provided
-        string userId = null;
+        string? userId = null;
+
         if (!string.IsNullOrEmpty(userName))
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Name == userName);
@@ -119,6 +120,14 @@ public class KPIController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
+        // Validate UserId
+        if (string.IsNullOrWhiteSpace(model.UserId) ||
+            !await _context.Users.AnyAsync(u => u.Id == model.UserId))
+        {
+            ModelState.AddModelError(nameof(model.UserId), "Selected user does not exist.");
+            return View(model);
+        }
+
         if (model.Type == "Admission")
         {
             var kpi = await _context.AdmissionKPIs.FindAsync(model.Id);
@@ -142,4 +151,5 @@ public class KPIController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(EditList));
     }
+
 }

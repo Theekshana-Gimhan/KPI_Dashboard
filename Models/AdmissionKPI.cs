@@ -18,6 +18,6 @@ namespace KPI_Dashboard.Models
         [Range(0, int.MaxValue, ErrorMessage = "Number of Consultations must be non-negative.")]
         public int Consultations { get; set; }
 
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
     }
 }

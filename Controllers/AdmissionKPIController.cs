@@ -89,8 +89,13 @@ namespace KPI_Dashboard.Controllers
         public IActionResult Index()
         {
             var user = _userManager.GetUserAsync(User).Result;
+            if (user == null)
+            {
+                return Unauthorized();
+            }
             var kpis = _context.AdmissionKPIs.Where(k => k.UserId == user.Id).ToList();
             return View(kpis);
         }
+
     }
 }

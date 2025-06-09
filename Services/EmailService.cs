@@ -20,12 +20,28 @@ namespace KPI_Dashboard.Services
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart("plain") { Text = message };
 
+            // Safely parse SMTP port with a default value
+            var portString = _configuration["EmailSettings:SmtpPort"];
+            int port = 25; // default SMTP port
+            if (!int.TryParse(portString, out port))
+            {
+                port = 25;
+            }
+
+            // Safely parse UseSsl with a default value
+            var useSslString = _configuration["EmailSettings:UseSsl"];
+            bool useSsl = false;
+            if (!bool.TryParse(useSslString, out useSsl))
+            {
+                useSsl = false;
+            }
+
             using (var client = new SmtpClient())
             {
                 await client.ConnectAsync(
                     _configuration["EmailSettings:SmtpServer"],
-                    int.Parse(_configuration["EmailSettings:SmtpPort"]),
-                    bool.Parse(_configuration["EmailSettings:UseSsl"]));
+                    port,
+                    useSsl);
 
                 await client.AuthenticateAsync(
                     _configuration["EmailSettings:SenderEmail"],

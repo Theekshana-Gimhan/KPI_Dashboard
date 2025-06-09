@@ -31,9 +31,15 @@ namespace KPI_Dashboard.Controllers
         public async Task<IActionResult> Index()
         {
             var users = new List<string> { "All users" };
-            users.AddRange((await _userManager.GetUsersInRoleAsync("Admission"))
-                .Concat(await _userManager.GetUsersInRoleAsync("Visa"))
-                .Select(u => u.UserName));
+
+            users.AddRange(
+                (await _userManager.GetUsersInRoleAsync("Admission"))
+                    .Concat(await _userManager.GetUsersInRoleAsync("Visa"))
+                    .Select(u => u.UserName)
+                    .Where(u => !string.IsNullOrEmpty(u))
+                    .Select(u => u!) // Now safe: only non-null, non-empty strings
+            );
+
             ViewBag.Users = users;
             return View();
         }
@@ -48,7 +54,8 @@ namespace KPI_Dashboard.Controllers
             endDate = endDate.Value.Date.AddDays(1).AddTicks(-1);
 
             var cacheKey = $"DashboardData_{startDate}_{endDate}_{department}_{user}";
-            if (!_cache.TryGetValue(cacheKey, out DashboardViewModel dashboardData))
+            if (!_cache.TryGetValue(cacheKey, out DashboardViewModel? dashboardData))
+
             {
                 dashboardData = new DashboardViewModel();
 

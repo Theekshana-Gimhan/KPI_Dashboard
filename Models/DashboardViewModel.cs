@@ -31,7 +31,7 @@
             public int TotalApplications { get; set; }
             public int TotalConsultations { get; set; }
             public double VisaConversionRate { get; set; }
-            public string TopPerformingUser { get; set; }
+            public string TopPerformingUser { get; set; } = string.Empty;
         }
 
         public LineChartData LineData { get; set; } = new LineChartData();

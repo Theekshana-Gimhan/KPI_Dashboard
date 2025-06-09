@@ -32,10 +32,10 @@ namespace KPI_Dashboard.Controllers
                 var roles = await _userManager.GetRolesAsync(user);
                 userViewModels.Add(new UserViewModel
                 {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
-                    Role = roles.FirstOrDefault()
+                    Id = user.Id ?? string.Empty,
+                    Name = user.Name ?? string.Empty,
+                    Email = user.Email ?? string.Empty,
+                    Role = roles.FirstOrDefault() ?? string.Empty
                 });
             }
 
@@ -48,7 +48,11 @@ namespace KPI_Dashboard.Controllers
         {
             var model = new AddUserViewModel
             {
-                AvailableRoles = _roleManager.Roles.Select(r => r.Name).ToList()
+                Name = string.Empty,
+                Email = string.Empty,
+                Password = string.Empty,
+                AvailableRoles = _roleManager.Roles.Select(r => r.Name ?? string.Empty).ToList(),
+                SelectedRoles = new List<string>()
             };
             return View(model);
         }
@@ -64,7 +68,8 @@ namespace KPI_Dashboard.Controllers
             if (!ModelState.IsValid)
             {
                 logger.LogWarning("ModelState is invalid. Errors: {Errors}", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                model.AvailableRoles = _roleManager.Roles.Select(r => r.Name).ToList();
+                model.AvailableRoles = _roleManager.Roles.Select(r => r.Name ?? string.Empty).ToList();
+                model.SelectedRoles ??= new List<string>();
                 return View(model);
             }
 
@@ -93,12 +98,12 @@ namespace KPI_Dashboard.Controllers
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-            model.AvailableRoles = _roleManager.Roles.Select(r => r.Name).ToList();
+            model.AvailableRoles = _roleManager.Roles.Select(r => r.Name ?? string.Empty).ToList();
+            model.SelectedRoles ??= new List<string>();
             return View(model);
         }
 
         // GET: Edit User
-
         [HttpGet]
         public async Task<IActionResult> EditUser(string id)
         {
@@ -111,11 +116,11 @@ namespace KPI_Dashboard.Controllers
             var roles = await _userManager.GetRolesAsync(user);
             var model = new EditUserViewModel
             {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
+                Id = user.Id ?? string.Empty,
+                Name = user.Name ?? string.Empty,
+                Email = user.Email ?? string.Empty,
                 SelectedRoles = roles.ToList(),
-                AvailableRoles = _roleManager.Roles.Select(r => r.Name).ToList()
+                AvailableRoles = _roleManager.Roles.Select(r => r.Name ?? string.Empty).ToList()
             };
 
             return View(model);
@@ -132,7 +137,8 @@ namespace KPI_Dashboard.Controllers
             if (!ModelState.IsValid)
             {
                 logger.LogWarning("ModelState is invalid. Errors: {Errors}", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                model.AvailableRoles = _roleManager.Roles.Select(r => r.Name).ToList();
+                model.AvailableRoles = _roleManager.Roles.Select(r => r.Name ?? string.Empty).ToList();
+                model.SelectedRoles ??= new List<string>();
                 return View(model);
             }
 
@@ -177,7 +183,8 @@ namespace KPI_Dashboard.Controllers
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-            model.AvailableRoles = _roleManager.Roles.Select(r => r.Name).ToList();
+            model.AvailableRoles = _roleManager.Roles.Select(r => r.Name ?? string.Empty).ToList();
+            model.SelectedRoles ??= new List<string>();
             return View(model);
         }
 
@@ -193,10 +200,10 @@ namespace KPI_Dashboard.Controllers
 
             var model = new UserViewModel
             {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault()
+                Id = user.Id ?? string.Empty,
+                Name = user.Name ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? string.Empty
             };
 
             return View(model);
@@ -224,7 +231,7 @@ namespace KPI_Dashboard.Controllers
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-            return View(new UserViewModel { Id = user.Id, Name = user.Name, Email = user.Email });
+            return View(new UserViewModel { Id = user.Id ?? string.Empty, Name = user.Name ?? string.Empty, Email = user.Email ?? string.Empty, Role = string.Empty });
         }
 
         // GET: Change Password
@@ -239,8 +246,8 @@ namespace KPI_Dashboard.Controllers
 
             var model = new ChangePasswordViewModel
             {
-                Id = user.Id,
-                Email = user.Email
+                Id = user.Id ?? string.Empty,
+                Email = user.Email ?? string.Empty
             };
 
             return View(model);
@@ -284,56 +291,56 @@ namespace KPI_Dashboard.Controllers
 
     public class UserViewModel
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Role { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
     }
 
     public class AddUserViewModel
     {
         [Required(ErrorMessage = "Name is required.")]
         [StringLength(100, ErrorMessage = "Name must not exceed 100 characters.")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email format.")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Password is required.")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
-        public List<string> AvailableRoles { get; set; } = new List<string>(); // Initialize to empty list
-        public List<string> SelectedRoles { get; set; }
+        public List<string> AvailableRoles { get; set; } = new List<string>();
+        public List<string> SelectedRoles { get; set; } = new List<string>();
     }
 
     public class EditUserViewModel
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Name is required.")]
         [StringLength(100, ErrorMessage = "Name must not exceed 100 characters.")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email format.")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
-        public List<string> AvailableRoles { get; set; } = new List<string>(); // Initialize to avoid null
-        public List<string> SelectedRoles { get; set; }
+        public List<string> AvailableRoles { get; set; } = new List<string>();
+        public List<string> SelectedRoles { get; set; } = new List<string>();
     }
 
     public class ChangePasswordViewModel
     {
-        public string Id { get; set; }
-        public string Email { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "New Password is required.")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "New Password must be at least 6 characters long.")]
-        public string NewPassword { get; set; }
+        public string NewPassword { get; set; } = string.Empty;
 
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
+        public string ConfirmPassword { get; set; } = string.Empty;
     }
 }
