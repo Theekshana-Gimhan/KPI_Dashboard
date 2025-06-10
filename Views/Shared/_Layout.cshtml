@@ -29,6 +29,19 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="KPITargets" asp-action="Index">
+                                    <i class="fas fa-bullseye"></i> KPI Targets
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="AuditTrail" asp-action="Index">
+                                    <i class="fas fa-history"></i> Audit Trail
+                                </a>
+                            </li>
+                        }
                         <!-- Privacy link
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>

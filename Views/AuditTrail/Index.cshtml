@@ -1,0 +1,122 @@
+﻿@model IEnumerable<KPIAuditTrail>
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between">
+            <h4>Audit Trail</h4>
+            <form method="get" class="form-inline">
+                <select name="actionType" asp-items="@(new SelectList(ViewBag.ActionTypes))"
+                        class="form-control mr-2">
+                    <option value="">All Actions</option>
+                </select>
+
+                <select name="isSuccess" class="form-control mr-2">
+                    <option value="">All Statuses</option>
+                    <option value="true">Success</option>
+                    <option value="false">Failed</option>
+                </select>
+
+                <input type="date" name="fromDate" class="form-control mr-2"
+                       value="@Context.Request.Query["fromDate"]" />
+
+                <input type="date" name="toDate" class="form-control mr-2"
+                       value="@Context.Request.Query["toDate"]" />
+
+                <button type="submit" class="btn btn-light">Filter</button>
+            </form>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Target</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var audit in Model)
+                        {
+                            <tr class="@(audit.IsSuccess ? "" : "table-danger")">
+                                <td>@audit.Timestamp.ToString("g")</td>
+                                <td>@audit.User?.Email</td>
+                                <td>@audit.Action</td>
+                                <td>@audit.ActionType</td>
+                                <td>
+                                    @if (audit.IsSuccess)
+                                    {
+                                        <span class="badge bg-success">Success</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Failed</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (audit.Target != null)
+                                    {
+                                        <span>@audit.Target.Department - @audit.Target.StartDate.ToShortDateString()</span>
+                                    }
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"
+                                            onclick="showAuditDetails('@audit.OldValues', '@audit.NewValues')">
+                                        View
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="auditDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Audit Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-md-6">
+                    <h6>Old Values</h6>
+                    <pre id="oldValues" class="p-2 bg-light rounded"></pre>
+                </div>
+                <div class="col-md-6">
+                    <h6>New Values</h6>
+                    <pre id="newValues" class="p-2 bg-light rounded"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showAuditDetails(oldValues, newValues) {
+            try {
+                const oldObj = oldValues ? JSON.parse(oldValues) : null;
+                const newObj = newValues ? JSON.parse(newValues) : null;
+
+                document.getElementById('oldValues').textContent =
+                    oldObj ? JSON.stringify(oldObj, null, 2) : "No old values";
+
+                document.getElementById('newValues').textContent =
+                    newObj ? JSON.stringify(newObj, null, 2) : "No new values";
+
+                new bootstrap.Modal(document.getElementById('auditDetailsModal')).show();
+            } catch (e) {
+                console.error("Error parsing audit details:", e);
+                alert("Error displaying audit details");
+            }
+        }
+    </script>
+}

@@ -1,0 +1,34 @@
+﻿@using KPI_Dashboard.Models
+@model KPITarget
+
+@if (Model.Department == "Admissions")
+{
+    <div class="form-group">
+        <label asp-for="TargetApplications" class="control-label"></label>
+        <input asp-for="TargetApplications" class="form-control" />
+        <span asp-validation-for="TargetApplications" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="TargetConsultations" class="control-label"></label>
+        <input asp-for="TargetConsultations" class="form-control" />
+        <span asp-validation-for="TargetConsultations" class="text-danger"></span>
+    </div>
+}
+else
+{
+    <div class="form-group">
+        <label asp-for="TargetInquiries" class="control-label"></label>
+        <input asp-for="TargetInquiries" class="form-control" />
+        <span asp-validation-for="TargetInquiries" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="TargetConsultations" class="control-label"></label>
+        <input asp-for="TargetConsultations" class="form-control" />
+        <span asp-validation-for="TargetConsultations" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="TargetConversions" class="control-label"></label>
+        <input asp-for="TargetConversions" class="form-control" />
+        <span asp-validation-for="TargetConversions" class="text-danger"></span>
+    </div>
+}
