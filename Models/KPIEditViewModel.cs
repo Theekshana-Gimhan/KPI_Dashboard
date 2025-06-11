@@ -1,4 +1,6 @@
-﻿namespace KPI_Dashboard.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace KPI_Dashboard.Models
 {
     public class KPIEditViewModel
     {
@@ -10,6 +12,9 @@
         public int? Consultations { get; set; }
         public int? Inquiries { get; set; }
         public int? Conversions { get; set; }
+
+        
+        [StringLength(450)]
         public string UserId { get; set; } = string.Empty;
     }
 }

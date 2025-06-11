@@ -13,5 +13,7 @@ namespace KPI_Dashboard.Data
 
         public DbSet<AdmissionKPI> AdmissionKPIs { get; set; }
         public DbSet<VisaKPI> VisaKPIs { get; set; }
+        public DbSet<KPITarget> KPITargets { get; set; }
+
     }
 }
