@@ -22,6 +22,8 @@ namespace KPI_Dashboard.Models
         [Range(0, int.MaxValue, ErrorMessage = "Number of Conversions must be non-negative.")]
         public int Conversions { get; set; }
 
+        [Required]
+        [StringLength(450)]
         public string UserId { get; set; } = string.Empty;
 
     }
