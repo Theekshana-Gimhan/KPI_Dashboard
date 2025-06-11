@@ -55,6 +55,10 @@
                 <a asp-controller="Admin" asp-action="Index" class="btn btn-info p-3 flex-fill text-center" style="min-width:220px;max-width:300px;">User Management</a>
                 <a asp-controller="KPI" asp-action="EditList" class="btn btn-warning p-3 flex-fill text-center" style="min-width:220px;max-width:300px;">Edit KPI</a>
             }
+            @if (isAdmin)
+            {
+                <a class="btn btn-primary" asp-page="/KpiTargets">Manage KPI Targets</a>
+            }
         </div>
     </div>
     <!-- Bootstrap JS for interactive components -->

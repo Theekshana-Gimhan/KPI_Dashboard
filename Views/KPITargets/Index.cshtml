@@ -1,0 +1,72 @@
+﻿@model KPITargetsViewModel
+@{
+    ViewData["Title"] = "KPI Targets";
+}
+
+<h2>KPI Targets</h2>
+<div style="display: flex; gap: 2rem;">
+    <!-- Admissions Form -->
+    <form asp-action="Update" method="post" style="flex:1;">
+        <input type="hidden" name="department" value="Admissions" />
+        <h3>Admissions Department</h3>
+        <div>
+            <label>Applications Target:</label>
+            <input asp-for="AdmissionsApplications" type="number" />
+        </div>
+        <div>
+            <label>Consultations Target:</label>
+            <input asp-for="AdmissionsConsultations" type="number" />
+        </div>
+        <button type="submit">Update Admissions Targets</button>
+        @if (Model.AdmissionsSuccessMessage != null)
+        {
+            <div class="success-message" id="admissions-success">@Model.AdmissionsSuccessMessage</div>
+        }
+    </form>
+
+    <!-- Visa Form -->
+    <form asp-action="Update" method="post" style="flex:1;">
+        <input type="hidden" name="department" value="Visa" />
+        <h3>Visa Department</h3>
+        <div>
+            <label>Inquiries Target:</label>
+            <input asp-for="VisaInquiries" type="number" />
+        </div>
+        <div>
+            <label>Consultations Target:</label>
+            <input asp-for="VisaConsultations" type="number" />
+        </div>
+        <div>
+            <label>Conversions Target:</label>
+            <input asp-for="VisaConversions" type="number" />
+        </div>
+        <button type="submit">Update Visa Targets</button>
+        @if (Model.VisaSuccessMessage != null)
+        {
+            <div class="success-message" id="visa-success">@Model.VisaSuccessMessage</div>
+        }
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        setTimeout(function () {
+            var admMsg = document.getElementById('admissions-success');
+            if (admMsg) admMsg.style.display = 'none';
+            var visaMsg = document.getElementById('visa-success');
+            if (visaMsg) visaMsg.style.display = 'none';
+        }, 3000);
+    </script>
+    <style>
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+
+        form {
+            border: 1px solid #ccc;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+    </style>
+}
