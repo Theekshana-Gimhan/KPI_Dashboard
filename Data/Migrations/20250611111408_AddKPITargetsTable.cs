@@ -10,7 +10,16 @@ namespace KPI_Dashboard.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Ensure UserId columns are nvarchar(450)
+            // Drop indexes that depend on UserId before altering the column
+            migrationBuilder.DropIndex(
+                name: "IX_AdmissionKPIs_UserId",
+                table: "AdmissionKPIs");
+
+            migrationBuilder.DropIndex(
+                name: "IX_VisaKPIs_UserId",
+                table: "VisaKPIs");
+
+            // Alter UserId columns to nvarchar(450)
             migrationBuilder.AlterColumn<string>(
                 name: "UserId",
                 table: "AdmissionKPIs",
@@ -29,6 +38,18 @@ namespace KPI_Dashboard.Data.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
+            // Recreate indexes after altering the columns
+            migrationBuilder.CreateIndex(
+                name: "IX_AdmissionKPIs_UserId",
+                table: "AdmissionKPIs",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VisaKPIs_UserId",
+                table: "VisaKPIs",
+                column: "UserId");
+
+            // Create the KPITargets table
             migrationBuilder.CreateTable(
                 name: "KPITargets",
                 columns: table => new
@@ -51,6 +72,16 @@ namespace KPI_Dashboard.Data.Migrations
             migrationBuilder.DropTable(
                 name: "KPITargets");
 
+            // Drop indexes before reverting the columns
+            migrationBuilder.DropIndex(
+                name: "IX_AdmissionKPIs_UserId",
+                table: "AdmissionKPIs");
+
+            migrationBuilder.DropIndex(
+                name: "IX_VisaKPIs_UserId",
+                table: "VisaKPIs");
+
+            // Revert UserId columns to nvarchar(max)
             migrationBuilder.AlterColumn<string>(
                 name: "UserId",
                 table: "AdmissionKPIs",
@@ -68,6 +99,17 @@ namespace KPI_Dashboard.Data.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(450)",
                 oldMaxLength: 450);
+
+            // Recreate indexes after reverting the columns
+            migrationBuilder.CreateIndex(
+                name: "IX_AdmissionKPIs_UserId",
+                table: "AdmissionKPIs",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VisaKPIs_UserId",
+                table: "VisaKPIs",
+                column: "UserId");
         }
     }
 }
