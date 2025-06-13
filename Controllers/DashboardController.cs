@@ -192,13 +192,13 @@ namespace KPI_Dashboard.Controllers
                 }
             }
 
-            if (department == "Admission")
+           
+            if (!string.IsNullOrEmpty(department) && department != "All" && department != "All Departments")
             {
-                visaQuery = visaQuery.Where(k => false);
-            }
-            else if (department == "Visa")
-            {
-                admissionQuery = admissionQuery.Where(k => false);
+                if (department == "Admission")
+                    visaQuery = visaQuery.Where(k => false);
+                else if (department == "Visa")
+                    admissionQuery = admissionQuery.Where(k => false);
             }
 
             using (var workbook = new XLWorkbook())
