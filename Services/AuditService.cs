@@ -1,6 +1,7 @@
 ﻿using KPI_Dashboard.Data;
 using System.Security.Claims;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore; // Add this for DbUpdateConcurrencyException
 
 public class AuditService
 {
@@ -46,7 +47,16 @@ public class AuditService
         {
             log.IsSuccess = isSuccess;
             log.ErrorMessage = errorMessage;
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // Handle concurrency conflict (e.g., log, notify, or reload entity)
+                // Optionally, you can reload the entity and retry, or just return
+                // For now, just swallow or log the exception
+            }
         }
     }
 }
