@@ -22,69 +22,6 @@ namespace KPI_Dashboard.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("KPIAuditTrail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ActionType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsSuccess")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("NewValues")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OldValues")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
-                    b.Property<int?>("TargetId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Timestamp")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActionType");
-
-                    b.HasIndex("IsSuccess");
-
-                    b.HasIndex("TargetId");
-
-                    b.HasIndex("Timestamp");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("KPIAuditTrails");
-                });
-
             modelBuilder.Entity("KPI_Dashboard.Models.AdmissionKPI", b =>
                 {
                     b.Property<int>("Id")
@@ -104,10 +41,11 @@ namespace KPI_Dashboard.Data.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("AdmissionKPIs");
                 });
@@ -181,54 +119,6 @@ namespace KPI_Dashboard.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("KPI_Dashboard.Models.KPITarget", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Department")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PeriodType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SetByUserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("SetDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("TargetApplications")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TargetConsultations")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TargetConversions")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TargetInquiries")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Department", "StartDate", "EndDate")
-                        .IsUnique();
-
-                    b.ToTable("KPITargets");
-                });
-
             modelBuilder.Entity("KPI_Dashboard.Models.VisaKPI", b =>
                 {
                     b.Property<int>("Id")
@@ -251,10 +141,11 @@ namespace KPI_Dashboard.Data.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("VisaKPIs");
                 });
@@ -396,19 +287,24 @@ namespace KPI_Dashboard.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("KPIAuditTrail", b =>
+            modelBuilder.Entity("KPI_Dashboard.Models.AdmissionKPI", b =>
                 {
-                    b.HasOne("KPI_Dashboard.Models.KPITarget", "Target")
-                        .WithMany()
-                        .HasForeignKey("TargetId");
-
                     b.HasOne("KPI_Dashboard.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Target");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("KPI_Dashboard.Models.VisaKPI", b =>
+                {
+                    b.HasOne("KPI_Dashboard.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
