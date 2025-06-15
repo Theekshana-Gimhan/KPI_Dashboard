@@ -141,13 +141,22 @@ namespace KPI_Dashboard.Controllers
                 }
 
                 // Bar Chart: Applications vs Consultations, Consultations vs Conversions
-                dashboardData.BarData.Labels.Add("Applications vs Consultations (Admission)");
-                dashboardData.BarData.Labels.Add("Consultations vs Conversions (Visa)");
+                dashboardData.BarData.Labels.Clear();
+                dashboardData.BarData.Labels.Add("Admission");
+                dashboardData.BarData.Labels.Add("Visa");
+
+                dashboardData.BarData.Applications.Clear();
+                dashboardData.BarData.Consultations.Clear();
+                dashboardData.BarData.Conversions.Clear();
+
                 dashboardData.BarData.Applications.Add(admissionQuery.Sum(k => k.Applications));
+                dashboardData.BarData.Applications.Add(0); // No applications for Visa
+
                 dashboardData.BarData.Consultations.Add(admissionQuery.Sum(k => k.Consultations));
                 dashboardData.BarData.Consultations.Add(visaQuery.Sum(k => k.Consultations));
-                dashboardData.BarData.Conversions.Add(visaQuery.Sum(k => k.Conversions));
 
+                dashboardData.BarData.Conversions.Add(0); // No conversions for Admission
+                dashboardData.BarData.Conversions.Add(visaQuery.Sum(k => k.Conversions));
                 // Metric Cards
                 dashboardData.Metrics.TotalApplications = admissionQuery.Sum(k => k.Applications);
                 dashboardData.Metrics.TotalConsultations = admissionQuery.Sum(k => k.Consultations) + visaQuery.Sum(k => k.Consultations);
