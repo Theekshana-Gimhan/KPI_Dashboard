@@ -3,6 +3,9 @@
     --vxl-blue: #185A8D;
     --vxl-dark-blue: #1A4375;
     --vxl-white: #FFFFFF;
+    --vxl-violet: #4E4C7E;
+    --vxl-dark-gray: #6D8295;
+    --vxl-plam: #834471;
 }
 
 /* Typography and base styles */
@@ -114,6 +117,99 @@ h1, h2, h3, h4, h5, h6 {
         border-color: var(--vxl-dark-blue);
         color: var(--vxl-white);
     }
+
+.btn-dash {
+    background-color: var(--vxl-blue);
+    border-color: var(--vxl-blue);
+    color: var(--vxl-white);
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;
+    text-decoration-line: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+    .btn-dash:hover, .btn-dash:focus {
+        background-color: var(--vxl-red);
+        border-color: var(--vxl-dark-red);
+        color: var(--vxl-white);
+        display: flex;
+        justify-content: center; /* Centers horizontally */
+        align-items: center;
+        text-decoration-line: none;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
+        transition: box-shadow 0.2s ease-in-out; /* Smooth transition */
+    }
+
+.btn-management {
+    background-color: var(--vxl-plam);
+    border-color: var(--vxl-plam);
+    color: var(--vxl-white);
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;
+    text-decoration-line: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+    .btn-management:hover, .btn-management:focus {
+        background-color: var(--vxl-red);
+        border-color: var(--vxl-dark-red);
+        color: var(--vxl-white);
+        display: flex;
+        justify-content: center; /* Centers horizontally */
+        align-items: center;
+        text-decoration-line: none;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
+        transition: box-shadow 0.2s ease-in-out; /* Smooth transition */
+    }
+
+.btn-traget {
+    background-color: var(--vxl-dark-gray);
+    border-color: var(--vxl-dark-gray);
+    color: var(--vxl-white);
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;
+    text-decoration-line: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+    .btn-traget:hover, .btn-traget:focus {
+        background-color: var(--vxl-red);
+        border-color: var(--vxl-dark-red);
+        color: var(--vxl-white);
+        display: flex;
+        justify-content: center; /* Centers horizontally */
+        align-items: center;
+        text-decoration-line: none;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
+        transition: box-shadow 0.2s ease-in-out; /* Smooth transition */
+    }
+
+.btn-edit {
+    background-color: var(--vxl-violet);
+    border-color: var(--vxl-violet);
+    color: var(--vxl-white);
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;
+    text-decoration-line: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+    .btn-edit:hover, .btn-edit:focus {
+        background-color: var(--vxl-red);
+        border-color: var(--vxl-red);
+        color: var(--vxl-white);
+        display: flex;
+        justify-content: center; /* Centers horizontally */
+        align-items: center;
+        text-decoration-line: none;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
+        transition: box-shadow 0.2s ease-in-out; /* Smooth transition */
+    }
+
 
 /* Links */
 a {

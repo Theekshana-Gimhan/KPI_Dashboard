@@ -65,13 +65,19 @@
             }
             @if (isAdmin || isAdmission || isVisa)
             {
-                <a asp-controller="Dashboard" asp-action="Index" class="btn btn-success p-3 flex-fill text-center" style="min-width:220px;max-width:300px;">View Dashboard</a>
+                <a asp-controller="Dashboard" asp-action="Index" class="btn-dash" style="min-width:220px;max-width:300px;min-height:50px;">View Dashboard</a>
             }
             @if (isAdmin)
             {
-                <a asp-controller="Admin" asp-action="Index" class="btn btn-info p-3 flex-fill text-center" style="min-width:220px;max-width:300px;">User Management</a>
-                <a asp-controller="KPI" asp-action="EditList" class="btn btn-warning p-3 flex-fill text-center" style="min-width:220px;max-width:300px;">Edit KPI</a>
-                <a asp-controller="KPITargets" asp-action="Index" class="btn btn-info p-3 flex-fill text-center" style="min-width:220px;max-width:300px;">Manage KPI Targets</a>
+                <a asp-controller="Admin" asp-action="Index" class="btn-management" style="min-width:220px;max-width:300px;min-height:50px;">User Management</a>
+                <a asp-controller="KPI" asp-action="EditList" class="btn-edit" style="min-width:220px;max-width:300px;min-height:50px;">Edit KPI</a>
+                <a asp-controller="KPITargets" asp-action="Index" class="btn-traget" style="min-width:220px;max-width:300px;min-height:50px;">Manage KPI Targets</a>
+            }
+            @if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                <div class="d-flex justify-content-center mt-4">
+                    <a href="/Identity/Account/Login" class="btn btn-outline-primary btn-lg px-5">Login</a>
+                </div>
             }
         </div>
     </div>
